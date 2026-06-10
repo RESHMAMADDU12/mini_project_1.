@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Estate Property Portal</title>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+body{
+    background:#f4f4f4;
+}
+header{
+    background:#1f4e79;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+.filters{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+    justify-content:center;
+    padding:20px;
+    background:white;
+    box-shadow:0 2px 10px rgba(0,0,0,.1);
+}
+.filters input,
+.filters select{
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius:5px;
+}
+.container{
+    display:flex;
+    gap:20px;
+    padding:20px;
+}
+.properties{
+    flex:2;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:20px;
+}
+.card{
+    background:white;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 4px 10px rgba(0,0,0,.15);
+    transition:.3s;
+}
+.card:hover{
+    transform:translateY(-5px);
+}
+.card img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+}
+.card-content{
+    padding:15px;
+}
+.price{
+    color:green;
+    font-size:20px;
+    font-weight:bold;
+}
+.map{
+    flex:1;
+    min-height:600px;
+    background:#d9e9ff;
+    border-radius:12px;
+    position:relative;
+    padding:20px;
+}
+.map h2{
+    text-align:center;
+    margin-bottom:20px;
+}
+.pin{
+    position:absolute;
+    font-size:28px;
+}
+.pin1{top:120px;left:100px;}
+.pin2{top:250px;left:180px;}
+.pin3{top:400px;left:120px;}
+@media(max-width:768px){
+    .container{
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+<body>
+<header>
+<h1>🏠 Real Estate Property Portal</h1>
+<p>Find Your Dream Home</p>
+</header>
+<div class="filters">
+<input type="text" id="searchLocation"
+placeholder="Search Location">
+<select id="typeFilter">
+<option value="all">All Types</option>
+<option value="Apartment">Apartment</option>
+<option value="Villa">Villa</option>
+<option value="House">House</option>
+</select>
+<select id="bedFilter">
+<option value="all">All Bedrooms</option>
+<option value="2">2 BHK</option>
+<option value="3">3 BHK</option>
+<option value="4">4 BHK</option>
+</select>
+<label>
+Max Price:
+<input type="range"
+id="priceRange"
+min="100000"
+max="1000000"
+step="50000"
+value="1000000">
+<span id="priceValue">1000000</span>
+</label>
+</div>
+<div class="container">
+<div class="properties" id="propertyList">
+<div class="card"
+data-location="Hyderabad"
+data-type="Apartment"
+data-bed="2"
+data-price="300000">
+<img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=800" alt="">
+<div class="card-content">
+<h3>Modern Apartment</h3>
+<p>📍 Hyderabad</p>
+<p>🛏 2 Bedrooms</p>
+<p class="price">₹300000</p>
+</div>
+</div>
+<div class="card"
+data-location="Bangalore"
+data-type="Villa"
+data-bed="3"
+data-price="600000">
+<img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=800" alt="">
+<div class="card-content">
+<h3>Luxury Villa</h3>
+<p>📍 Bangalore</p>
+<p>🛏 3 Bedrooms</p>
+<p class="price">₹600000</p>
+</div>
+</div>
+<div class="card"
+data-location="Chennai"
+data-type="House"
+data-bed="4"
+data-price="900000">
+<img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=800" alt="">
+<div class="card-content">
+<h3>Premium House</h3>
+<p>📍 Chennai</p>
+<p>🛏 4 Bedrooms</p>
+<p class="price">₹900000</p>
+</div>
+</div>
+</div>
+<div class="map">
+<h2>📍 Property Map</h2>
+<div class="pin pin1">📍 Hyderabad</div>
+<div class="pin pin2">📍 Bangalore</div>
+<div class="pin pin3">📍 Chennai</div>
+</div>
+</div>
+<script>
+const searchLocation =
+document.getElementById("searchLocation");
+const typeFilter =
+document.getElementById("typeFilter");
+const bedFilter =
+document.getElementById("bedFilter");
+const priceRange =
+document.getElementById("priceRange");
+const priceValue =
+document.getElementById("priceValue");
+searchLocation.addEventListener("input", filterData);
+typeFilter.addEventListener("change", filterData);
+bedFilter.addEventListener("change", filterData);
+priceRange.addEventListener("input", filterData);
+function filterData(){
+priceValue.innerText = priceRange.value;
+const location =
+searchLocation.value.toLowerCase();
+const type =
+typeFilter.value;
+const bed =
+bedFilter.value;
+const maxPrice =
+Number(priceRange.value);
+const cards =
+document.querySelectorAll(".card");
+cards.forEach(card=>{
+const cardLocation =
+card.dataset.location.toLowerCase();
+const cardType =
+card.dataset.type;
+const cardBed =
+card.dataset.bed;
+const cardPrice =
+Number(card.dataset.price);
+const matchLocation =
+cardLocation.includes(location);
+const matchType =
+type==="all" || cardType===type;
+const matchBed =
+bed==="all" || cardBed===bed;
+const matchPrice =
+cardPrice<=maxPrice;
+if(matchLocation &&
+matchType &&
+matchBed &&
+matchPrice){
+card.style.display="block";
+}
+else{
+card.style.display="none";
+}
+});
+}
+</script>
+</body>
+</html>
